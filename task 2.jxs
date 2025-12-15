@@ -1,0 +1,97 @@
+import React, { useState } from "react";
+
+export default function App() {
+  const [data, setData] = useState({
+    email: "",
+    age: "",
+    password: "",
+    confirmPassword: ""
+  });
+  const [errors, setErrors] = useState({});
+  const [success, setSuccess] = useState("");
+
+  const handleChange = (e) =>
+    setData({ ...data, [e.target.name]: e.target.value });
+
+  const validate = () => {
+    let err = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passRegex = /^(?=.*\d).{8,}$/;
+
+    if (!data.email) err.email = "Email required";
+    else if (!emailRegex.test(data.email)) err.email = "Invalid email";
+
+    if (!data.age) err.age = "Age required";
+    else if (data.age < 18 || data.age > 60) err.age = "Age 18–60 only";
+
+    if (!data.password) err.password = "Password required";
+    else if (!passRegex.test(data.password))
+      err.password = "Min 8 chars & 1 number";
+
+    if (!data.confirmPassword)
+      err.confirmPassword = "Confirm password";
+    else if (data.password !== data.confirmPassword)
+      err.confirmPassword = "Passwords not match";
+
+    setErrors(err);
+    return Object.keys(err).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSuccess("");
+    if (validate()) {
+      setSuccess("Form Submitted Successfully ✔");
+      setData({ email: "", age: "", password: "", confirmPassword: "" });
+      setErrors({});
+    }
+  };
+
+  return (
+    <div className="container">
+      <style>{`
+        body { margin:0; font-family:Arial;
+          background:linear-gradient(135deg,#1d2671,#c33764); }
+        .container { height:100vh; display:flex;
+          align-items:center; justify-content:center; }
+        .box { background:#fff; padding:30px; width:330px;
+          border-radius:12px; }
+        label { display:block; margin-top:10px; font-weight:bold; }
+        input { width:100%; padding:8px; margin-top:5px; }
+        button { width:100%; margin-top:15px; padding:10px;
+          background:#1d2671; color:#fff; border:none; }
+        .error { color:red; font-size:12px; }
+        .success { color:green; text-align:center; margin-top:10px; }
+      `}</style>
+
+      <div className="box">
+        <h3>Index Form</h3>
+        <form onSubmit={handleSubmit} noValidate>
+          <label>Email</label>
+          <input name="email" value={data.email} onChange={handleChange} />
+          <div className="error">{errors.email}</div>
+
+          <label>Age</label>
+          <input type="number" name="age" value={data.age} onChange={handleChange} />
+          <div className="error">{errors.age}</div>
+
+          <label>Password</label>
+          <input type="password" name="password" value={data.password} onChange={handleChange} />
+          <div className="error">{errors.password}</div>
+
+          <label>Confirm Password</label>
+          <input
+            type="password"
+            name="confirmPassword"
+            value={data.confirmPassword}
+            onChange={handleChange}
+          />
+          <div className="error">{errors.confirmPassword}</div>
+
+          <button type="submit">Submit</button>
+          <div className="success">{success}</div>
+        </form>
+      </div>
+    </div>
+  );
+}
